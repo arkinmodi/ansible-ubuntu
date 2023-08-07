@@ -1,0 +1,20 @@
+---
+- name: Personal Ubuntu Environment
+  hosts: localhost
+
+  pre_tasks:
+    - name: Stop if not Debian/Ubuntu
+      ansible.builtin.fail:
+        msg: This playbook is only for Ubuntu
+      when: ansible_os_family != "Debian"
+
+    - name: Update apt
+      ansible.builtin.apt:
+        update_cache: true
+      become: true
+
+  tasks:
+    - name: Dotfiles
+      ansible.builtin.import_tasks: tasks/dotfiles.yml
+    - name: Neovim
+      ansible.builtin.import_tasks: tasks/neovim.yml

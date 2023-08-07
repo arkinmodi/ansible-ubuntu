@@ -1,0 +1,50 @@
+---
+- name: Install Neovim Dependencies
+  ansible.builtin.apt:
+    install_recommends: false
+    name:
+      # Build deps
+      - ccache
+      - cmake
+      - curl
+      - gettext
+      - ninja-build
+      - unzip
+
+- name: Ensure opt folder
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ansible_user_dir }}/opt"
+    mode: "755"
+
+- name: Clone Neovim Repo
+  ansible.builtin.git:
+    repo: git@github.com:neovim/neovim
+    dest: "{{ ansible_user_dir }}/opt/neovim"
+    accept_newhostkey: true
+    depth: 1
+  register: clone
+
+- name: Build Neovim
+  when: clone.before != clone.after
+  community.general.make:
+    chdir: "{{ ansible_user_dir }}/opt/neovim"
+    params:
+      CMAKE_BUILD_TYPE: Release
+
+- name: Ensure bin folder
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ansible_user_dir }}/bin"
+    mode: "755"
+
+- name: Link Neovim
+  ansible.builtin.file:
+    state: link
+    src: "{{ ansible_user_dir }}/opt/neovim/build/bin/nvim"
+    dest: "{{ ansible_user_dir }}/bin/nvim"
+
+- name: Install Neovim Plugins
+  ansible.builtin.command: nvim --headless '+Lazy! restore' +qa
+  register: result
+  changed_when: result.stderr != ""
