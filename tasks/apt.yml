@@ -1,0 +1,29 @@
+---
+- name: Update All Packages
+  ansible.builtin.apt:
+    state: latest
+    upgrade: full
+  become: true
+
+- name: Install Packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - build-essential
+      - curl
+      - dos2unix
+      - git
+      - jq
+      - neofetch
+      - tmux
+      - tree
+      - wget
+      - xclip
+  become: true
+
+- name: Cleanup apt
+  ansible.builtin.apt:
+    autoclean: true
+    autoremove: true
+    clean: true
+  become: true

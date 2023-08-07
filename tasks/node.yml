@@ -1,0 +1,66 @@
+---
+- name: Install Nodejs
+  when: ansible_machine == 'x86_64' or ansible_machine == 'arm64'
+  vars:
+    node_version: v18.17.0
+
+    node_x86_archive_name: "node-{{ node_version }}-linux-x64"
+    node_x86_sha256: 5c4a7fd9262c0c47bafab3442de6c3fed1602be3d243cb8cf11309a201955e75  # yamllint disable-line rule:line-length
+
+    node_arm_archive_name: "node-{{ node_version }}-linux-arm64"
+    node_arm_sha256: 9d586f9d8b73a121b8a5438079c7106379aaae868f945a9f1755565607607944  # yamllint disable-line rule:line-length
+
+    node_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(node_x86_archive_name, node_arm_archive_name) }}"  # yamllint disable-line rule:line-length
+    node_sha256: "{{ (ansible_machine == 'x86_64') | ternary(node_x86_sha256, node_arm_sha256) }}"  # yamllint disable-line rule:line-length
+  block:
+    - name: Download Nodejs tar
+      ansible.builtin.get_url:
+        url: "https://nodejs.org/dist/{{ node_version }}/{{ node_archive_name }}.tar.gz"  # yamllint disable-line rule:line-length
+        checksum: "sha256:{{ node_sha256 }}"
+        dest: "/tmp/{{ node_archive_name }}.tar.gz"
+        mode: "755"
+
+    - name: Ensure opt folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/opt"
+        mode: "755"
+
+    - name: Unarchive Nodejs tar
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ node_archive_name }}.tar.gz"
+        dest: "{{ ansible_user_dir }}/opt"
+        remote_src: true
+        creates: "{{ ansible_user_dir }}/opt/{{ node_archive_name }}"
+        mode: "755"
+
+    - name: Ensure bin folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/bin"
+        mode: "755"
+
+    - name: Link Nodejs Binaries
+      ansible.builtin.file:
+        state: link
+        src: "{{ item }}"
+        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+      with_fileglob:
+        - "{{ ansible_user_dir }}/opt/{{ node_archive_name }}/bin/*"
+
+    - name: Find Old Nodejs
+      ansible.builtin.find:
+        paths: "{{ ansible_user_dir }}/opt"
+        pattern: "node-v*"
+        file_type: directory
+      register: old_node
+
+    - name: Purge Old Nodejs
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item.path }}"
+      vars:
+        paths_to_keep:
+          - "{{ ansible_user_dir }}/opt/{{ node_archive_name }}"
+      when: item.path not in paths_to_keep
+      loop: "{{ old_node.files }}"

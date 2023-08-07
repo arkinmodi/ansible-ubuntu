@@ -3,6 +3,8 @@
   ansible.builtin.apt:
     install_recommends: false
     name:
+      - ripgrep
+
       # Build deps
       - ccache
       - cmake
@@ -10,6 +12,7 @@
       - gettext
       - ninja-build
       - unzip
+  become: true
 
 - name: Ensure opt folder
   ansible.builtin.file:

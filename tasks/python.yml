@@ -1,0 +1,68 @@
+---
+- name: Setup virtualenv
+  vars:
+    target_venv: "{{ ansible_user_dir }}/opt/venv"
+    python_packages:
+      - autopep8
+      - bwenv
+      - flake8
+      - podman-compose
+      - tox
+      - twine
+      - virtualenv
+      - yamllint
+      - youtube-dl
+  block:
+  - name: Install venv Module
+    ansible.builtin.apt:
+      state: present
+      name:
+        - python3-venv
+    become: true
+
+  - name: Download virtualenv
+    ansible.builtin.get_url:
+      url: https://bootstrap.pypa.io/virtualenv.pyz
+      dest: /tmp/virtualenv.pyz
+      mode: "755"
+
+  - name: Create virtualenv
+    ansible.builtin.command:
+      cmd: >
+        "{{ ansible_python.executable }}"
+        /tmp/virtualenv.pyz
+        -p /usr/bin/python3
+        "{{ target_venv }}"
+      creates: "{{ target_venv }}/bin/python3"
+
+  - name: Install Python Packages
+    ansible.builtin.pip:
+      virtualenv: "{{ target_venv }}"
+      state: latest
+      name: "{{ python_packages }}"
+
+  - name: Ensure bin folder
+    ansible.builtin.file:
+      state: directory
+      path: "{{ ansible_user_dir }}/bin"
+      mode: "755"
+
+  - name: Link Python and Pip Binaries
+    ansible.builtin.file:
+      state: link
+      src: "{{ item }}"
+      dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+    with_fileglob:
+      - "{{ target_venv }}/bin/pip"
+      - "{{ target_venv }}/bin/pip3"
+      - "{{ target_venv }}/bin/pip3.*"
+      - "{{ target_venv }}/bin/python"
+      - "{{ target_venv }}/bin/python3"
+      - "{{ target_venv }}/bin/python3.*"
+
+  - name: Link Python Package Binaries
+    ansible.builtin.file:
+      state: link
+      src: "{{ target_venv }}/bin/{{ item }}"
+      dest: "{{ ansible_user_dir }}/bin/{{ item }}"
+    loop: "{{ python_packages }}"
