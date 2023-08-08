@@ -3,7 +3,7 @@
   vars:
     dotfiles_dir: "{{ ansible_user_dir }}/.dotfiles"
   block:
-    - name: Clone dotfiles Repo
+    - name: Clone dotfiles Repo  # noqa latest[git]
       ansible.builtin.git:
         repo: git@github.com:arkinmodi/dotfiles
         dest: "{{ dotfiles_dir }}"

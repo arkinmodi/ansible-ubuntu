@@ -20,7 +20,7 @@
     path: "{{ ansible_user_dir }}/opt"
     mode: "755"
 
-- name: Clone Neovim Repo
+- name: Clone Neovim Repo  # noqa latest[git]
   ansible.builtin.git:
     repo: git@github.com:neovim/neovim
     dest: "{{ ansible_user_dir }}/opt/neovim"
