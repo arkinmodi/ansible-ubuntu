@@ -1,0 +1,59 @@
+---
+- name: Setup PyPI Ansible
+  vars:
+    target_venv: "{{ ansible_user_dir }}/opt/ansible-venv"
+    python_packages:
+      - ansible
+      - ansible-lint
+  block:
+    - name: Download virtualenv
+      ansible.builtin.get_url:
+        url: https://bootstrap.pypa.io/virtualenv.pyz
+        dest: /tmp/virtualenv.pyz
+        mode: "755"
+
+    - name: Create Ansible virtualenv
+      ansible.builtin.command:
+        cmd: >
+          "{{ ansible_python.executable }}"
+          /tmp/virtualenv.pyz
+          -p /usr/bin/python3
+          "{{ target_venv }}"
+        creates: "{{ target_venv }}/bin/python"
+
+    - name: Install Ansible Packages
+      ansible.builtin.pip:
+        virtualenv: "{{ target_venv }}"
+        state: latest  # noqa package-latest
+        name: "{{ python_packages }}"
+
+    - name: Ensure bin folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/bin"
+        mode: "755"
+
+    - name: Link Ansible Package Binaries
+      ansible.builtin.file:
+        state: link
+        src: "{{ item }}"
+        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+      with_fileglob:
+        - "{{ target_venv }}/bin/ansible*"
+
+- name: Remove APT Ansible
+  block:
+    - name: Remove APT Ansible
+      ansible.builtin.apt:
+        state: absent
+        autoclean: true
+        autoremove: true
+        name:
+          - ansible
+      become: true
+
+    - name: Remove Ansible PPA
+      ansible.builtin.apt_repository:
+        state: absent
+        repo: ppa:ansible/ansible
+      become: true

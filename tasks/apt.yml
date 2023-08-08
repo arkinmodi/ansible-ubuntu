@@ -12,9 +12,11 @@
       - build-essential
       - curl
       - dos2unix
+      - fzf
       - git
       - jq
       - neofetch
+      - podman
       - tmux
       - tree
       - wget

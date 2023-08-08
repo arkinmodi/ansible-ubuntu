@@ -1,0 +1,67 @@
+---
+- name: Download and Install Go & Purge Old Go
+  when: ansible_machine == 'x86_64' or ansible_machine == 'arm64'
+  vars:
+    go_version: 1.20.7
+
+    go_x86_archive_name: "go{{ go_version }}.linux-amd64"
+    go_x86_sha256: f0a87f1bcae91c4b69f8dc2bc6d7e6bfcd7524fceec130af525058c0c17b1b44
+
+    go_arm_archive_name: "go{{ go_version }}.linux-arm64"
+    go_arm_sha256: 44781ae3b153c3b07651d93b6bc554e835a36e2d72a696281c1e4dad9efffe43
+
+    go_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(go_x86_archive_name, go_arm_archive_name) }}"  # yamllint disable-line rule:line-length
+    go_sha256: "{{ (ansible_machine == 'x86_64') | ternary(go_x86_sha256, go_arm_sha256) }}"  # yamllint disable-line rule:line-length
+  block:
+    - name: Download Go tar
+      ansible.builtin.get_url:
+        # https://go.dev/dl/
+        url: "https://go.dev/dl/{{ go_archive_name }}.tar.gz"
+        checksum: "sha256:{{ go_sha256 }}"
+        dest: "/tmp/{{ go_archive_name }}.tar.gz"
+        mode: "755"
+
+    - name: Ensure opt folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/opt/{{ go_archive_name }}"
+        mode: "755"
+
+    - name: Unarchive Go tar
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ go_archive_name }}.tar.gz"
+        dest: "{{ ansible_user_dir }}/opt/{{ go_archive_name }}"
+        remote_src: true
+        creates: "{{ ansible_user_dir }}/opt/{{ go_archive_name }}/go"
+        mode: "755"
+
+    - name: Ensure bin folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/bin"
+        mode: "755"
+
+    - name: Link Go Binaries
+      ansible.builtin.file:
+        state: link
+        src: "{{ item }}"
+        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+      with_fileglob:
+        - "{{ ansible_user_dir }}/opt/{{ go_archive_name }}/go/bin/*"
+
+    - name: Find Old Go
+      ansible.builtin.find:
+        paths: "{{ ansible_user_dir }}/opt"
+        pattern: "go*"
+        file_type: directory
+      register: old_gos
+
+    - name: Purge Old Go
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item.path }}"
+      vars:
+        paths_to_keep:
+          - "{{ ansible_user_dir }}/opt/{{ go_archive_name }}"
+      when: item.path not in paths_to_keep
+      loop: "{{ old_gos.files }}"
