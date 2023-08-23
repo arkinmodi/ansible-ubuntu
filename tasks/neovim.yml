@@ -1,5 +1,6 @@
 ---
 - name: Install Neovim Dependencies
+  become: true
   ansible.builtin.apt:
     install_recommends: false
     name:
@@ -12,28 +13,36 @@
       - gettext
       - ninja-build
       - unzip
-  become: true
 
 - name: Ensure opt folder
   ansible.builtin.file:
     state: directory
-    path: "{{ ansible_user_dir }}/opt"
+    path: "{{ ansible_user_dir }}/opt/neovim"
     mode: "755"
 
 - name: Clone Neovim Repo  # noqa latest[git]
   ansible.builtin.git:
     repo: git@github.com:neovim/neovim
-    dest: "{{ ansible_user_dir }}/opt/neovim"
+    dest: "{{ ansible_user_dir }}/opt/neovim/repo"
     accept_newhostkey: true
     depth: 1
   register: clone
 
+- name: Purge Old Neovim Build
+  when: clone.before != clone.after
+  ansible.builtin.file:
+    state: absent
+    path: "{{ ansible_user_dir }}/opt/neovim/repo/build"
+
 - name: Build Neovim
   when: clone.before != clone.after
+  become: true
   community.general.make:
-    chdir: "{{ ansible_user_dir }}/opt/neovim"
+    target: install
+    chdir: "{{ ansible_user_dir }}/opt/neovim/repo"
     params:
       CMAKE_BUILD_TYPE: Release
+      CMAKE_INSTALL_PREFIX: "{{ ansible_user_dir }}/opt/neovim/build"
 
 - name: Ensure bin folder
   ansible.builtin.file:
