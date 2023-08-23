@@ -13,6 +13,8 @@
       - gettext
       - ninja-build
       - unzip
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Ensure opt folder
   ansible.builtin.file:

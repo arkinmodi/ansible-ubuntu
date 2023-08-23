@@ -4,6 +4,8 @@
     state: latest  # noqa package-latest
     upgrade: full
   become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Install Packages
   ansible.builtin.apt:
@@ -22,6 +24,8 @@
       - wget
       - xclip
   become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Cleanup apt
   ansible.builtin.apt:
@@ -29,3 +33,5 @@
     autoremove: true
     clean: true
   become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
