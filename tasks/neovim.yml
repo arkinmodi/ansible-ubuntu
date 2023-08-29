@@ -32,6 +32,7 @@
 
 - name: Purge Old Neovim Build
   when: clone.before != clone.after
+  become: true
   ansible.builtin.file:
     state: absent
     path: "{{ ansible_user_dir }}/opt/neovim/repo/build"
