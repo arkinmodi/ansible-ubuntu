@@ -1,0 +1,110 @@
+---
+- name: Install Rust
+  when: ansible_machine == 'x86_64' or ansible_machine == 'arm64'
+  vars:
+    rust_version: 1.72.0
+    rust_archive_name: "rust-{{ rust_version }}"
+
+    # https://rust-lang.github.io/rustup/installation/other.html
+    rustup_x86_arch: x86_64-unknown-linux-gnu
+    rustup_x86_sha256: 0b2f6c8f85a3d02fde2efc0ced4657869d73fccfce59defb4e8d29233116e6db  # yamllint disable-line rule:line-length
+
+    rustup_arm_arch: aarch64-unknown-linux-gnu
+    rustup_arm_sha256: 673e336c81c65e6b16dcdede33f4cc9ed0f08bde1dbe7a935f113605292dc800  # yamllint disable-line rule:line-length
+
+    rustup_version: 1.26.0
+    rustup_arch: "{{ (ansible_machine == 'x86_64') | ternary(rustup_x86_arch, rustup_arm_arch) }}"  # yamllint disable-line rule:line-length
+    rustup_sha256: "{{ (ansible_machine == 'x86_64') | ternary(rustup_x86_sha256, rustup_arm_sha256) }}"  # yamllint disable-line rule:line-length
+
+    rust_components:
+      - rust-analyzer
+
+    rust_packages:
+      - package_name: fd-find
+        binary_name: fd
+      - package_name: ripgrep
+        binary_name: rg
+      - package_name: stylua
+        binary_name: stylua
+  environment:
+    CARGO_HOME: "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.cargo"
+    RUSTUP_HOME: "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.rustup"
+  block:
+    - name: Download rustup-init
+      ansible.builtin.get_url:
+        url: "https://static.rust-lang.org/rustup/archive/{{ rustup_version }}/{{ rustup_arch }}/rustup-init"  # yamllint disable-line rule:line-length
+        checksum: "sha256:{{ rustup_sha256 }}"
+        dest: /tmp/rustup-init
+        mode: "755"
+
+    - name: Ensure opt folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}"
+        mode: "755"
+
+    - name: Run rustup-init
+      ansible.builtin.command:
+        argv:
+          - /tmp/rustup-init
+          - "--default-host={{ rustup_arch }}"
+          - "--default-toolchain={{ rust_version }}"
+          - --no-modify-path
+          - --profile=default
+          - -y
+        creates: "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.rustup/toolchains/{{ rust_version }}-{{ rustup_arch }}/bin/rustc"  # yamllint disable-line rule:line-length
+
+    - name: Install Rust Components
+      ansible.builtin.command:
+        argv:
+          - "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.cargo/bin/rustup"  # yamllint disable-line rule:line-length
+          - component
+          - add
+          - "{{ item }}"
+      loop: "{{ rust_components }}"
+      register: result
+      changed_when: "'is up to date' not in result.stderr"
+
+    - name: Ensure bin folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ansible_user_dir }}/bin"
+        mode: "755"
+
+    - name: Link Rust Binaries
+      ansible.builtin.file:
+        state: link
+        src: "{{ item }}"
+        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+      with_fileglob:
+        - "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.cargo/bin/cargo*"
+        - "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.cargo/bin/rust*"
+
+    - name: Install Rust Packages
+      community.general.cargo:
+        name: "{{ rust_packages | map(attribute='package_name') }}"
+        state: latest
+
+    - name: Link Rust Package Binaries
+      ansible.builtin.file:
+        state: link
+        src: "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}/.cargo/bin/{{ item.binary_name }}"  # yamllint disable-line rule:line-length
+        dest: "{{ ansible_user_dir }}/bin/{{ item.binary_name }}"
+      loop: "{{ rust_packages }}"
+
+    - name: Find Old Rust
+      ansible.builtin.find:
+        paths: "{{ ansible_user_dir }}/opt"
+        pattern: "rust-*"
+        file_type: directory
+      register: old_rust
+
+    - name: Purge Old Rust
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item.path }}"
+      vars:
+        paths_to_keep:
+          - "{{ ansible_user_dir }}/opt/{{ rust_archive_name }}"
+      when: item.path not in paths_to_keep
+      loop: "{{ old_rust.files }}"

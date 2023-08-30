@@ -26,6 +26,8 @@
       ansible.builtin.import_tasks: tasks/node.yml
     - name: Go
       ansible.builtin.import_tasks: tasks/go.yml
+    - name: Rust
+      ansible.builtin.import_tasks: tasks/rust.yml
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
     - name: Ansible
