@@ -5,8 +5,6 @@
     name:
       - zsh
   become: true
-  environment:
-    DEBIAN_FRONTEND: noninteractive
 
 - name: Set zsh to the default shell
   ansible.builtin.command: "usermod --shell /bin/zsh {{ ansible_user_id }}"

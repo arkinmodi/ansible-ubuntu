@@ -21,8 +21,6 @@
           - python3-distutils
           - python3-venv
       become: true
-      environment:
-        DEBIAN_FRONTEND: noninteractive
 
     - name: Download virtualenv
       ansible.builtin.get_url:

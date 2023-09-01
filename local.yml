@@ -13,6 +13,9 @@
         update_cache: true
       become: true
 
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
   tasks:
     - name: APT
       ansible.builtin.import_tasks: tasks/apt.yml
