@@ -12,6 +12,16 @@
 
     node_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(node_x86_archive_name, node_arm_archive_name) }}"  # yamllint disable-line rule:line-length
     node_sha256: "{{ (ansible_machine == 'x86_64') | ternary(node_x86_sha256, node_arm_sha256) }}"  # yamllint disable-line rule:line-length
+    node_opt_dir: "{{ ansible_user_dir }}/opt/{{ node_archive_name }}"
+
+    npm_packages:
+      - "@astrojs/language-server"
+      - "@tailwindcss/language-server"
+      - prettier
+      - typescript
+      - typescript-language-server
+      - vscode-langservers-extracted
+      - yaml-language-server
   block:
     - name: Download Nodejs tar
       ansible.builtin.get_url:
@@ -31,8 +41,17 @@
         src: "/tmp/{{ node_archive_name }}.tar.gz"
         dest: "{{ ansible_user_dir }}/opt"
         remote_src: true
-        creates: "{{ ansible_user_dir }}/opt/{{ node_archive_name }}"
+        creates: "{{ node_opt_dir }}"
         mode: "755"
+
+    - name: Install NPM Packages
+      community.general.npm:
+        global: true
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ npm_packages }}"
+      environment:
+        PATH: "{{ node_opt_dir }}/bin:{{ ansible_env.PATH }}"
 
     - name: Ensure bin folder
       ansible.builtin.file:
@@ -40,13 +59,13 @@
         path: "{{ ansible_user_dir }}/bin"
         mode: "755"
 
-    - name: Link Nodejs Binaries
+    - name: Link Nodejs and NPM Package Binaries
       ansible.builtin.file:
         state: link
         src: "{{ item }}"
         dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
       with_fileglob:
-        - "{{ ansible_user_dir }}/opt/{{ node_archive_name }}/bin/*"
+        - "{{ node_opt_dir }}/bin/*"
 
     - name: Find Old Nodejs
       ansible.builtin.find:
@@ -61,6 +80,6 @@
         path: "{{ item.path }}"
       vars:
         paths_to_keep:
-          - "{{ ansible_user_dir }}/opt/{{ node_archive_name }}"
+          - "{{ node_opt_dir }}"
       when: item.path not in paths_to_keep
       loop: "{{ old_node.files }}"
