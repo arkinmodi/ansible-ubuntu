@@ -23,6 +23,8 @@
       ansible.builtin.import_tasks: tasks/dotfiles.yml
     - name: ZSH
       ansible.builtin.import_tasks: tasks/zsh.yml
+    - name: Fonts
+      ansible.builtin.import_tasks: tasks/fonts.yml
     - name: Python
       ansible.builtin.import_tasks: tasks/python.yml
     - name: Nodejs
