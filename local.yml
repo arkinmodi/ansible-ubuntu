@@ -19,21 +19,37 @@
   tasks:
     - name: APT
       ansible.builtin.import_tasks: tasks/apt.yml
+      tags: apt
     - name: Dotfiles
       ansible.builtin.import_tasks: tasks/dotfiles.yml
+      tags: dotfiles
     - name: ZSH
       ansible.builtin.import_tasks: tasks/zsh.yml
+      tags:
+        - dotfiles
+        - zsh
     - name: Fonts
       ansible.builtin.import_tasks: tasks/fonts.yml
+      tags:
+        - dotfiles
+        - fonts
     - name: Python
       ansible.builtin.import_tasks: tasks/python.yml
+      tags: python
     - name: Nodejs
       ansible.builtin.import_tasks: tasks/node.yml
+      tags:
+        - node
+        - npm
     - name: Go
       ansible.builtin.import_tasks: tasks/go.yml
+      tags: go
     - name: Rust
       ansible.builtin.import_tasks: tasks/rust.yml
+      tags: rust
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
+      tags: neovim
     - name: Ansible
       ansible.builtin.import_tasks: tasks/ansible.yml
+      tags: ansible
