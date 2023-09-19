@@ -20,6 +20,8 @@
       - rust-analyzer
 
     rust_packages:
+      - package_name: bat
+        binary_name: bat
       - package_name: fd-find
         binary_name: fd
       - package_name: ripgrep
