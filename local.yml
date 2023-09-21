@@ -53,6 +53,9 @@
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
       tags: neovim
+    - name: Visual Studio Code
+      ansible.builtin.import_tasks: tasks/vscode.yml
+      tags: vscode
     - name: Ansible
       ansible.builtin.import_tasks: tasks/ansible.yml
       tags: ansible
