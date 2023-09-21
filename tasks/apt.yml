@@ -8,13 +8,6 @@
     upgrade: full
   become: true
 
-- name: Add git PPA
-  ansible.builtin.apt_repository:
-    repo: 'ppa:git-core/ppa'
-    state: present
-    update_cache: true
-  become: true
-
 - name: Install Packages
   ansible.builtin.apt:
     state: present
@@ -23,7 +16,6 @@
       - curl
       - dos2unix
       - fzf
-      - git
       - jq
       - neofetch
       - podman

@@ -23,6 +23,9 @@
     - name: APT
       ansible.builtin.import_tasks: tasks/apt.yml
       tags: apt
+    - name: Git
+      ansible.builtin.import_tasks: tasks/git.yml
+      tags: git
     - name: Dotfiles
       ansible.builtin.import_tasks: tasks/dotfiles.yml
       tags: dotfiles

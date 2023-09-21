@@ -1,0 +1,23 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks
+# yamllint enable rule:line-length
+---
+
+# `add-apt-repository` will automatically add the GPG key to the trusted.gpg.d
+# folder. Ansible still uses `apt-key` so the GPG key gets added to the
+# deprecated trusted.gpg file. The recommended way to avoid using this
+# deprecated behaviour is to manually download the GPG keys.
+# https://github.com/ansible/ansible/issues/80004
+
+- name: Add git PPA
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:git-core/ppa
+    state: present
+    update_cache: true
+
+- name: Install git
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name: git
