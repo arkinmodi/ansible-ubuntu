@@ -1,0 +1,38 @@
+---
+- name: Set Favourite Apps
+  community.general.dconf:
+    key: /org/gnome/shell/favorite-apps
+    value:
+      - org.gnome.Nautilus.desktop
+      - org.gnome.Terminal.desktop
+      - firefox.desktop
+
+- name: Remove Personal Folder
+  community.general.dconf:
+    key: /org/gnome/shell/extensions/ding/show-home
+    value: false
+
+- name: Disable Screen Blank
+  community.general.dconf:
+    key: /org/gnome/desktop/session/idle-delay
+    value: 0
+
+- name: Disable Dynamic Workspaces
+  community.general.dconf:
+    key: /org/gnome/mutter/dynamic-workspaces
+    value: false
+
+- name: Set Number of Workspaces
+  community.general.dconf:
+    key: /org/gnome/desktop/wm/preferences/num-workspaces
+    value: 1
+
+- name: Do Not Show Mounts
+  community.general.dconf:
+    key: /org/gnome/shell/extensions/dash-to-dock/show-mounts
+    value: false
+
+- name: Disable Natural Scrolling
+  community.general.dconf:
+    key: /org/gnome/desktop/peripherals/mouse/natural-scroll
+    value: false

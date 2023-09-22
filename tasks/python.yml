@@ -18,6 +18,9 @@
       - virtualenv
       - yamllint
       - youtube-dl
+
+    python_packages_no_binary:
+      - pynvim
   block:
     - name: Install venv Module
       ansible.builtin.apt:
@@ -73,8 +76,5 @@
         state: link
         src: "{{ target_venv }}/bin/{{ item }}"
         dest: "{{ ansible_user_dir }}/bin/{{ item }}"
-      vars:
-        no_binary:
-          - pynvim
-      when: item not in no_binary
+      when: item not in python_packages_no_binary
       loop: "{{ python_packages }}"

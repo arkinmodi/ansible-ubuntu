@@ -59,6 +59,9 @@
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
       tags: neovim
+    - name: GNOME Desktop Environment
+      ansible.builtin.import_tasks: tasks/gnome.yml
+      tags: gnome
     - name: Visual Studio Code
       ansible.builtin.import_tasks: tasks/vscode.yml
       tags: vscode

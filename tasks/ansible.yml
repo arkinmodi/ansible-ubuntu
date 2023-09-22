@@ -8,6 +8,9 @@
     python_packages:
       - ansible
       - ansible-lint
+
+      # NOTE: Needed for community.general.dconf ansible module
+      - psutil
   block:
     - name: Download virtualenv
       ansible.builtin.get_url:

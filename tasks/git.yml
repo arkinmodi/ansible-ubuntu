@@ -3,9 +3,9 @@
 # yamllint enable rule:line-length
 ---
 
-# `add-apt-repository` will automatically add the GPG key to the trusted.gpg.d
-# folder. Ansible still uses `apt-key` so the GPG key gets added to the
-# deprecated trusted.gpg file. The recommended way to avoid using this
+# NOTE: `add-apt-repository` will automatically add the GPG key to the
+# trusted.gpg.d folder. Ansible still uses `apt-key` so the GPG key gets added
+# to the deprecated trusted.gpg file. The recommended way to avoid using this
 # deprecated behaviour is to manually download the GPG keys.
 # https://github.com/ansible/ansible/issues/80004
 
