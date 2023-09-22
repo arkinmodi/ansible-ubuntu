@@ -47,12 +47,6 @@
         creates: "{{ go_opt_dir }}/{{ go_archive_name }}/go/bin/go"
         mode: "755"
 
-    - name: Ensure bin folder
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ansible_user_dir }}/bin"
-        mode: "755"
-
     - name: Link Go Binaries
       ansible.builtin.file:
         state: link

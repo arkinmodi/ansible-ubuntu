@@ -33,12 +33,6 @@
         state: latest  # noqa package-latest
         name: "{{ python_packages }}"
 
-    - name: Ensure bin folder
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ansible_user_dir }}/bin"
-        mode: "755"
-
     - name: Link Ansible Package Binaries
       ansible.builtin.file:
         state: link
@@ -50,16 +44,16 @@
 - name: Remove APT Ansible
   block:
     - name: Remove APT Ansible
+      become: true
       ansible.builtin.apt:
         state: absent
         autoclean: true
         autoremove: true
         name:
           - ansible
-      become: true
 
     - name: Remove Ansible PPA
+      become: true
       ansible.builtin.apt_repository:
         state: absent
         repo: ppa:ansible/ansible
-      become: true

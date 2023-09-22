@@ -33,12 +33,6 @@
         dest: "/tmp/{{ node_archive_name }}.tar.gz"
         mode: "755"
 
-    - name: Ensure opt folder
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ansible_user_dir }}/opt"
-        mode: "755"
-
     - name: Unarchive Nodejs tar
       ansible.builtin.unarchive:
         src: "/tmp/{{ node_archive_name }}.tar.gz"
@@ -55,12 +49,6 @@
       loop: "{{ npm_packages }}"
       environment:
         PATH: "{{ node_opt_dir }}/bin:{{ ansible_env.PATH }}"
-
-    - name: Ensure bin folder
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ansible_user_dir }}/bin"
-        mode: "755"
 
     - name: Link Nodejs and NPM Package Binaries
       ansible.builtin.file:

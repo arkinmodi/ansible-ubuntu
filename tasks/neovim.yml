@@ -15,12 +15,6 @@
       - ninja-build
       - unzip
 
-- name: Ensure opt folder
-  ansible.builtin.file:
-    state: directory
-    path: "{{ ansible_user_dir }}/opt/neovim"
-    mode: "755"
-
 - name: Clone Neovim Repo
   ansible.builtin.git:
     accept_newhostkey: true
@@ -46,12 +40,6 @@
     params:
       CMAKE_BUILD_TYPE: Release
       CMAKE_INSTALL_PREFIX: "{{ ansible_user_dir }}/opt/neovim/build"
-
-- name: Ensure bin folder
-  ansible.builtin.file:
-    state: directory
-    path: "{{ ansible_user_dir }}/bin"
-    mode: "755"
 
 - name: Link Neovim
   ansible.builtin.file:

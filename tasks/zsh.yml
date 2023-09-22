@@ -3,14 +3,14 @@
 # yamllint enable rule:line-length
 ---
 - name: Install zsh
+  become: true
   ansible.builtin.apt:
     state: present
     name:
       - zsh
-  become: true
 
 - name: Set zsh to the default shell
-  ansible.builtin.command: "usermod --shell /bin/zsh {{ ansible_user_id }}"
   become: true
+  ansible.builtin.command: "usermod --shell /bin/zsh {{ ansible_user_id }}"
   register: result
   changed_when: "result.stdout != 'usermod: no changes'"

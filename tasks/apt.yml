@@ -3,12 +3,13 @@
 # yamllint enable rule:line-length
 ---
 - name: Update All Packages
+  become: true
   ansible.builtin.apt:
     state: latest  # noqa package-latest
     upgrade: full
-  become: true
 
 - name: Install Packages
+  become: true
   ansible.builtin.apt:
     state: present
     name:
@@ -23,11 +24,10 @@
       - tree
       - wget
       - xclip
-  become: true
 
 - name: Cleanup apt
+  become: true
   ansible.builtin.apt:
     autoclean: true
     autoremove: true
     clean: true
-  become: true

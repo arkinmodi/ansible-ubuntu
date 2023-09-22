@@ -35,12 +35,6 @@
         src: "{{ dotfiles_dir }}/git/.config/git"
         dest: "{{ ansible_user_dir }}/.config/git"
 
-    - name: Link Alacritty Configurations
-      ansible.builtin.file:
-        state: link
-        src: "{{ dotfiles_dir }}/alacritty/.config/alacritty"
-        dest: "{{ ansible_user_dir }}/.config/alacritty"
-
     - name: Link Neovim Configurations
       ansible.builtin.file:
         state: link
@@ -54,17 +48,9 @@
         dest: "{{ ansible_user_dir }}/.config/tmux"
 
     - name: Link User Scripts
-      block:
-        - name: Ensure bin folder
-          ansible.builtin.file:
-            state: directory
-            path: "{{ ansible_user_dir }}/bin"
-            mode: "755"
-
-        - name: Link User Scripts
-          ansible.builtin.file:
-            state: link
-            src: "{{ item }}"
-            dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
-          with_fileglob:
-            - "{{ dotfiles_dir }}/scripts/*"
+      ansible.builtin.file:
+        state: link
+        src: "{{ item }}"
+        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+      with_fileglob:
+        - "{{ dotfiles_dir }}/scripts/*"

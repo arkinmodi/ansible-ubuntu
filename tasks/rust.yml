@@ -70,12 +70,6 @@
       register: result
       changed_when: "'is up to date' not in result.stderr"
 
-    - name: Ensure bin folder
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ansible_user_dir }}/bin"
-        mode: "755"
-
     - name: Link Rust Binaries
       ansible.builtin.file:
         state: link

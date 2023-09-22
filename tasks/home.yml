@@ -21,6 +21,4 @@
     path: "{{ item }}"
     mode: "755"
   loop:
-    - "{{ ansible_user_dir }}/bin"
-    - "{{ ansible_user_dir }}/opt"
     - "{{ ansible_user_dir }}/code/sandbox"
