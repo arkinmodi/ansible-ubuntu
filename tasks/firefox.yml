@@ -1,0 +1,26 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks
+# yamllint enable rule:line-length
+---
+- name: Add Mozilla PPA
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:mozillateam/ppa
+    state: present
+    update_cache: true
+
+- name: Set Firefox Pin
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/mozillateamppa
+    mode: "755"
+    content: |
+      Package: *
+      Pin: release o=LP-PPA-mozillateam
+      Pin-Priority: 700
+
+- name: Install FireFox
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name: firefox

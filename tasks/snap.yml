@@ -1,0 +1,10 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks
+# yamllint enable rule:line-length
+---
+- name: Purge snapd
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - snapd
+  become: true
