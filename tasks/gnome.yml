@@ -39,3 +39,8 @@
   community.general.dconf:
     key: /org/gnome/desktop/peripherals/mouse/natural-scroll
     value: false
+
+- name: Show Hidden Files in Nautilus
+  community.general.dconf:
+    key: /org/gtk/settings/file-chooser/show-hidden
+    value: true
