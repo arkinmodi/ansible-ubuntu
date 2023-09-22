@@ -62,6 +62,9 @@
     - name: GNOME Desktop Environment
       ansible.builtin.import_tasks: tasks/gnome.yml
       tags: gnome
+    - name: Home Directory
+      ansible.builtin.import_tasks: tasks/home.yml
+      tags: home
     - name: Visual Studio Code
       ansible.builtin.import_tasks: tasks/vscode.yml
       tags: vscode
