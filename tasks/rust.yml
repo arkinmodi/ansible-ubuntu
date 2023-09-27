@@ -27,6 +27,8 @@
         binary_name: bat
       - package_name: fd-find
         binary_name: fd
+      - package_name: onefetch
+        binary_name: onefetch
       - package_name: ripgrep
         binary_name: rg
       - package_name: stylua
