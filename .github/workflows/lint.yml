@@ -11,13 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.x"
-
       - run: pip install ansible ansible-lint
       - run: ansible-galaxy collection install community.general
       - run: ansible-lint
@@ -26,12 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.x"
-
       - run: pip install yamllint
       - run: yamllint --strict .
