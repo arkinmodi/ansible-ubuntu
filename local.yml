@@ -68,6 +68,9 @@
     - name: Rust
       ansible.builtin.import_tasks: tasks/rust.yml
       tags: rust
+    - name: Java
+      ansible.builtin.import_tasks: tasks/java.yml
+      tags: java
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
       tags: neovim
