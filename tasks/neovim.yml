@@ -15,38 +15,43 @@
       - ninja-build
       - unzip
 
-- name: Clone Neovim Repository
-  ansible.builtin.git:
-    accept_newhostkey: true
-    depth: 1
-    dest: "{{ ansible_user_dir }}/opt/neovim/repo"
-    repo: git@github.com:neovim/neovim
-    version: stable
-  register: clone
-
-- name: Build Neovim
-  when: clone.before != clone.after
+- name: Setup Neovim
+  vars:
+    neovim_repo: "{{ common_opt }}/neovim/repo"
+    neovim_build: "{{ common_opt }}/neovim/build"
   block:
-    - name: Clean Neovim Repository  # noqa: command-instead-of-module
-      ansible.builtin.command: git clean -ffxd
+    - name: Clone Neovim Repository
+      ansible.builtin.git:
+        accept_newhostkey: true
+        depth: 1
+        dest: "{{ neovim_repo }}"
+        repo: git@github.com:neovim/neovim
+        version: stable
+      register: clone
+
+    - name: Build Neovim
+      when: clone.before != clone.after
+      block:
+        - name: Clean Neovim Repository  # noqa: command-instead-of-module
+          ansible.builtin.command: git clean -ffxd
+          register: result
+          changed_when: result.stdout != ""
+
+        - name: Build & Install Neovim
+          community.general.make:
+            target: install
+            chdir: "{{ neovim_repo }}"
+            params:
+              CMAKE_BUILD_TYPE: Release
+              CMAKE_INSTALL_PREFIX: "{{ neovim_build }}"
+
+    - name: Link Neovim
+      ansible.builtin.file:
+        state: link
+        src: "{{ neovim_build }}/bin/nvim"
+        dest: "{{ common_bin }}/nvim"
+
+    - name: Install Neovim Plugins
+      ansible.builtin.command: nvim --headless '+Lazy! restore' +qa
       register: result
-      changed_when: result.stdout != ""
-
-    - name: Build & Install Neovim
-      community.general.make:
-        target: install
-        chdir: "{{ ansible_user_dir }}/opt/neovim/repo"
-        params:
-          CMAKE_BUILD_TYPE: Release
-          CMAKE_INSTALL_PREFIX: "{{ ansible_user_dir }}/opt/neovim/build"
-
-- name: Link Neovim
-  ansible.builtin.file:
-    state: link
-    src: "{{ ansible_user_dir }}/opt/neovim/build/bin/nvim"
-    dest: "{{ ansible_user_dir }}/bin/nvim"
-
-- name: Install Neovim Plugins
-  ansible.builtin.command: nvim --headless '+Lazy! restore' +qa
-  register: result
-  changed_when: result.stderr != ""
+      changed_when: result.stderr != ""

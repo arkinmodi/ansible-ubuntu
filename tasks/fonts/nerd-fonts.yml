@@ -12,15 +12,15 @@
 - name: Ensure opt folder
   ansible.builtin.file:
     state: directory
-    path: "{{ ansible_user_dir }}/opt/fonts/{{ font.name }}-{{ font.version }}"
+    path: "{{ common_opt }}/fonts/{{ font.name }}-{{ font.version }}"
     mode: "755"
 
 - name: Unarchive font tar
   ansible.builtin.unarchive:
     src: "/tmp/{{ font.name }}-{{ font.version }}.tar.xz"
-    dest: "{{ ansible_user_dir }}/opt/fonts/{{ font.name }}-{{ font.version }}"
+    dest: "{{ common_opt }}/fonts/{{ font.name }}-{{ font.version }}"
     remote_src: true
-    creates: "{{ ansible_user_dir }}/opt/fonts/{{ font.name }}-{{ font.version }}/README.md"  # yamllint disable-line rule:line-length
+    creates: "{{ common_opt }}/fonts/{{ font.name }}-{{ font.version }}/README.md"  # yamllint disable-line rule:line-length
     mode: "755"
 
 - name: Link fonts
@@ -29,4 +29,4 @@
     src: "{{ item }}"
     dest: "{{ ansible_user_dir }}/.local/share/fonts/{{ item | basename }}"
   with_fileglob:
-    - "{{ ansible_user_dir }}/opt/fonts/{{ font.name }}-{{ font.version }}/*.ttf"  # yamllint disable-line rule:line-length
+    - "{{ common_opt }}/fonts/{{ font.name }}-{{ font.version }}/*.ttf"

@@ -24,12 +24,16 @@
         path: "{{ item }}"
         mode: "755"
       loop:
-        - "{{ ansible_user_dir }}/bin"
-        - "{{ ansible_user_dir }}/opt"
+        - "{{ common_bin }}"
+        - "{{ common_opt }}"
       tags: always
 
   environment:
     DEBIAN_FRONTEND: noninteractive
+
+  vars:
+    common_bin: "{{ ansible_user_dir }}/bin"
+    common_opt: "{{ ansible_user_dir }}/opt"
 
   tasks:
     - name: APT

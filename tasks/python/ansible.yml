@@ -31,7 +31,7 @@
       ansible.builtin.file:
         state: link
         src: "{{ item }}"
-        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+        dest: "{{ common_bin }}/{{ item | basename }}"
       with_fileglob:
         - "{{ target_venv }}/bin/ansible*"
 

@@ -35,7 +35,7 @@
       ansible.builtin.file:
         state: link
         src: "{{ item }}"
-        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+        dest: "{{ common_bin }}/{{ item | basename }}"
       with_fileglob:
         - "{{ target_venv }}/bin/pip"
         - "{{ target_venv }}/bin/pip3"
@@ -48,5 +48,5 @@
       ansible.builtin.file:
         state: link
         src: "{{ target_venv }}/bin/{{ item }}"
-        dest: "{{ ansible_user_dir }}/bin/{{ item }}"
+        dest: "{{ common_bin }}/{{ item }}"
       loop: "{{ python_packages }}"

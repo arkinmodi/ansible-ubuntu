@@ -15,7 +15,7 @@
 
     go_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(go_x86_archive_name, go_arm_archive_name) }}"  # yamllint disable-line rule:line-length
     go_sha256: "{{ (ansible_machine == 'x86_64') | ternary(go_x86_sha256, go_arm_sha256) }}"  # yamllint disable-line rule:line-length
-    go_opt_dir: "{{ ansible_user_dir }}/opt/go-{{ go_version }}"  # yamllint disable-line rule:line-length
+    go_opt_dir: "{{ common_opt }}/go-{{ go_version }}"  # yamllint disable-line rule:line-length
 
     go_packages:
       - package_name: golang.org/x/tools/gopls
@@ -51,7 +51,7 @@
       ansible.builtin.file:
         state: link
         src: "{{ item }}"
-        dest: "{{ ansible_user_dir }}/bin/{{ item | basename }}"
+        dest: "{{ common_bin }}/{{ item | basename }}"
       with_fileglob:
         - "{{ go_opt_dir }}/{{ go_archive_name }}/go/bin/*"
 
@@ -66,12 +66,12 @@
       ansible.builtin.file:
         state: link
         src: "{{ go_opt_dir }}/bin/{{ item.binary_name }}"
-        dest: "{{ ansible_user_dir }}/bin/{{ item.binary_name }}"
+        dest: "{{ common_bin }}/{{ item.binary_name }}"
       loop: "{{ go_packages }}"
 
     - name: Find Old Go
       ansible.builtin.find:
-        paths: "{{ ansible_user_dir }}/opt"
+        paths: "{{ common_opt }}"
         pattern: "go-*"
         file_type: directory
       register: old_gos
