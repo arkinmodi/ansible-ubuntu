@@ -15,7 +15,7 @@
       - ninja-build
       - unzip
 
-- name: Clone Neovim Repo
+- name: Clone Neovim Repository
   ansible.builtin.git:
     accept_newhostkey: true
     depth: 1
@@ -24,22 +24,21 @@
     version: stable
   register: clone
 
-- name: Purge Old Neovim Build
-  when: clone.before != clone.after
-  become: true
-  ansible.builtin.file:
-    state: absent
-    path: "{{ ansible_user_dir }}/opt/neovim/repo/build"
-
 - name: Build Neovim
   when: clone.before != clone.after
-  become: true
-  community.general.make:
-    target: install
-    chdir: "{{ ansible_user_dir }}/opt/neovim/repo"
-    params:
-      CMAKE_BUILD_TYPE: Release
-      CMAKE_INSTALL_PREFIX: "{{ ansible_user_dir }}/opt/neovim/build"
+  block:
+    - name: Clean Neovim Repository  # noqa: command-instead-of-module
+      ansible.builtin.command: git clean -ffxd
+      register: result
+      changed_when: result.stdout != ""
+
+    - name: Build & Install Neovim
+      community.general.make:
+        target: install
+        chdir: "{{ ansible_user_dir }}/opt/neovim/repo"
+        params:
+          CMAKE_BUILD_TYPE: Release
+          CMAKE_INSTALL_PREFIX: "{{ ansible_user_dir }}/opt/neovim/build"
 
 - name: Link Neovim
   ansible.builtin.file:
