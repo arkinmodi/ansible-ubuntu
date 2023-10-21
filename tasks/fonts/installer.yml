@@ -10,7 +10,7 @@
       ansible.builtin.get_url:
         url: "{{ font.url }}"
         checksum: "sha256:{{ font.sha256 }}"
-        dest: "/tmp/{{ target_name }}.tar.xz"
+        dest: "{{ tempdir.path }}/{{ target_name }}.tar.xz"
         mode: "755"
 
     - name: Ensure opt folder
@@ -21,7 +21,7 @@
 
     - name: Unarchive font tar
       ansible.builtin.unarchive:
-        src: "/tmp/{{ target_name }}.tar.xz"
+        src: "{{ tempdir.path }}/{{ target_name }}.tar.xz"
         dest: "{{ fonts_opt_dir }}/{{ target_name }}"
         remote_src: true
         creates: "{{ fonts_opt_dir }}/{{ target_name }}"

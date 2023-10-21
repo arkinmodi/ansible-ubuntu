@@ -35,12 +35,12 @@
           ansible.builtin.get_url:
             url: "https://corretto.aws/downloads/resources/{{ jdk_version }}/{{ jdk_archive_name }}.tar.gz"  # yamllint disable-line rule:line-length
             checksum: "sha256:{{ jdk_sha256 }}"
-            dest: "/tmp/{{ jdk_archive_name }}.tar.gz"
+            dest: "{{ tempdir.path }}/{{ jdk_archive_name }}.tar.gz"
             mode: "755"
 
         - name: Unarchive JDK tar
           ansible.builtin.unarchive:
-            src: "/tmp/{{ jdk_archive_name }}.tar.gz"
+            src: "{{ tempdir.path }}/{{ jdk_archive_name }}.tar.gz"
             dest: "{{ java_opt_dir }}"
             remote_src: true
             creates: "{{ jdk_opt_dir }}/bin/java"
@@ -85,7 +85,7 @@
           ansible.builtin.get_url:
             url: "https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/{{ jdtls_version }}/{{ jdtls_archive_name }}.tar.gz"  # yamllint disable-line rule:line-length
             checksum: "sha256:{{ jdtls_sha256 }}"
-            dest: "/tmp/{{ jdtls_archive_name }}.tar.gz"
+            dest: "{{ tempdir.path }}/{{ jdtls_archive_name }}.tar.gz"
             mode: "755"
 
         - name: Ensure opt folder
@@ -96,7 +96,7 @@
 
         - name: Unarchive Eclipse JDT Language Server tar
           ansible.builtin.unarchive:
-            src: "/tmp/{{ jdtls_archive_name }}.tar.gz"
+            src: "{{ tempdir.path }}/{{ jdtls_archive_name }}.tar.gz"
             dest: "{{ jdtls_opt_dir }}"
             remote_src: true
             creates: "{{ jdtls_opt_dir }}/bin/jdtls"

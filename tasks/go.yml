@@ -30,7 +30,7 @@
         # https://go.dev/dl/
         url: "https://go.dev/dl/{{ go_archive_name }}.tar.gz"
         checksum: "sha256:{{ go_sha256 }}"
-        dest: "/tmp/{{ go_archive_name }}.tar.gz"
+        dest: "{{ tempdir.path }}/{{ go_archive_name }}.tar.gz"
         mode: "755"
 
     - name: Ensure opt folder
@@ -41,7 +41,7 @@
 
     - name: Unarchive Go tar
       ansible.builtin.unarchive:
-        src: "/tmp/{{ go_archive_name }}.tar.gz"
+        src: "{{ tempdir.path }}/{{ go_archive_name }}.tar.gz"
         dest: "{{ go_opt_dir }}/{{ go_archive_name }}"
         remote_src: true
         creates: "{{ go_opt_dir }}/{{ go_archive_name }}/go/bin/go"

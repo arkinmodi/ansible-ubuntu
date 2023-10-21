@@ -28,6 +28,12 @@
         - "{{ common_opt }}"
       tags: always
 
+    - name: Create Common Temporary Directory
+      ansible.builtin.tempfile:
+        state: directory
+      register: tempdir
+      tags: always
+
   environment:
     DEBIAN_FRONTEND: noninteractive
 

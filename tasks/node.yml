@@ -30,12 +30,12 @@
       ansible.builtin.get_url:
         url: "https://nodejs.org/dist/{{ node_version }}/{{ node_archive_name }}.tar.gz"  # yamllint disable-line rule:line-length
         checksum: "sha256:{{ node_sha256 }}"
-        dest: "/tmp/{{ node_archive_name }}.tar.gz"
+        dest: "{{ tempdir.path }}/{{ node_archive_name }}.tar.gz"
         mode: "755"
 
     - name: Unarchive Nodejs tar
       ansible.builtin.unarchive:
-        src: "/tmp/{{ node_archive_name }}.tar.gz"
+        src: "{{ tempdir.path }}/{{ node_archive_name }}.tar.gz"
         dest: "{{ common_opt }}"
         remote_src: true
         creates: "{{ node_opt_dir }}"

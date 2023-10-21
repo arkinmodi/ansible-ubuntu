@@ -42,7 +42,7 @@
       ansible.builtin.get_url:
         url: "https://static.rust-lang.org/rustup/archive/{{ rustup_version }}/{{ rustup_arch }}/rustup-init"  # yamllint disable-line rule:line-length
         checksum: "sha256:{{ rustup_sha256 }}"
-        dest: /tmp/rustup-init
+        dest: "{{ tempdir.path }}/rustup-init"
         mode: "755"
 
     - name: Ensure opt folder
@@ -54,7 +54,7 @@
     - name: Run rustup-init
       ansible.builtin.command:
         argv:
-          - /tmp/rustup-init
+          - "{{ tempdir.path }}/rustup-init"
           - "--default-host={{ rustup_arch }}"
           - "--default-toolchain={{ rust_version }}"
           - --no-modify-path
