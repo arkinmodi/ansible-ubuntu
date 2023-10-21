@@ -1,0 +1,39 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks
+# yamllint enable rule:line-length
+---
+- name: Setup Fonts
+  vars:
+    fonts_local_share: "{{ ansible_user_dir }}/.local/share/fonts"
+    fonts_opt_dir: "{{ common_opt }}/fonts"
+  block:
+    - name: Ensure fonts local share folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ fonts_local_share }}"
+        mode: "755"
+
+    - name: Ensure Fonts
+      vars:
+        fonts_metadata:
+          - name: Ubuntu
+            version: 3.0.2
+            sha256: 50382f10ad5574c4cdf599c4957487fd28c9f94d3db92c6baf1aafb59fe8640a  # yamllint disable-line rule:line-length
+            url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Ubuntu.tar.xz  # yamllint disable-line rule:line-length
+
+          - name: UbuntuMono
+            version: 3.0.2
+            sha256: 771cffc071477e5bf7cef1d63df3b7a0275da1357aa99f44dade781c670d846f  # yamllint disable-line rule:line-length
+            url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/UbuntuMono.tar.xz  # yamllint disable-line rule:line-length
+
+      ansible.builtin.include_tasks: tasks/fonts/installer.yml
+      loop: "{{ fonts_metadata }}"
+      loop_control:
+        loop_var: font
+
+    - name: Update fonts cache
+      ansible.builtin.command:
+        argv:
+          - fc-cache
+          - "{{ fonts_local_share }}"
+      changed_when: false

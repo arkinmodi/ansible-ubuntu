@@ -73,7 +73,7 @@
           when: item.path not in paths_to_keep
           loop: "{{ old_jdks.files }}"
 
-    - name: Download and Install Eclipse JDT Language Server & Purge Old Versions
+    - name: Ensure Eclipse JDT Language Server & Purge Old Versions
       vars:
         # https://download.eclipse.org/jdtls/milestones
         jdtls_version: 1.28.0
