@@ -4,46 +4,25 @@
 ---
 - name: Setup virtualenv
   vars:
-    target_venv: "{{ ansible_user_dir }}/opt/venv"
+    target_venv: "{{ python_dir }}/venv"
     python_packages:
       - autopep8
-      - awshelp
       - bwenv
       - flake8
       - podman-compose
-      - pynvim
       - tldr
       - tox
       - twine
       - virtualenv
       - yamllint
-      - youtube-dl
-
-    python_packages_no_binary:
-      - pynvim
   block:
-    - name: Install venv Module
-      ansible.builtin.apt:
-        state: present
-        name:
-          - python3-dev
-          - python3-distutils
-          - python3-venv
-      become: true
-
-    - name: Download virtualenv
-      ansible.builtin.get_url:
-        url: https://bootstrap.pypa.io/virtualenv.pyz
-        dest: /tmp/virtualenv.pyz
-        mode: "755"
-
-    - name: Create virtualenv
+    - name: Create venv virtualenv
       ansible.builtin.command:
-        cmd: >
-          "{{ ansible_python.executable }}"
-          /tmp/virtualenv.pyz
-          -p /usr/bin/python3
-          "{{ target_venv }}"
+        argv:
+          - "{{ ansible_python.executable }}"
+          - "{{ virtualenv_pyz }}"
+          - "-p={{ python_exe }}"
+          - "{{ target_venv }}"
         creates: "{{ target_venv }}/bin/python3"
 
     - name: Install Python Packages
@@ -70,5 +49,4 @@
         state: link
         src: "{{ target_venv }}/bin/{{ item }}"
         dest: "{{ ansible_user_dir }}/bin/{{ item }}"
-      when: item not in python_packages_no_binary
       loop: "{{ python_packages }}"

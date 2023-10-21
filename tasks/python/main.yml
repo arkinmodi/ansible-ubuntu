@@ -1,0 +1,47 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks
+# yamllint enable rule:line-length
+---
+- name: Download virtualenv.pyz
+  ansible.builtin.get_url:
+    url: https://bootstrap.pypa.io/virtualenv.pyz
+    dest: /tmp/virtualenv.pyz
+    mode: "755"
+  tags:
+    - ansible
+    - venv
+
+- name: Install Ubuntu Python 3 Packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - python3-dev
+      - python3-distutils
+      - python3-venv
+  become: true
+  tags:
+    - ansible
+    - venv
+
+- name: Setup Python
+  vars:
+    python_dir: "{{ common_opt }}/python"
+    python_exe: "/usr/bin/python3"
+    virtualenv_pyz: "/tmp/virtualenv.pyz"
+  block:
+    - name: Ensure opt Folder
+      ansible.builtin.file:
+        state: directory
+        path: "{{ python_dir }}"
+        mode: "755"
+      tags:
+        - ansible
+        - venv
+
+    - name: Python 3 Virtual Environment
+      ansible.builtin.import_tasks: tasks/python/venv.yml
+      tags: venv
+
+    - name: Ansible
+      ansible.builtin.import_tasks: tasks/python/ansible.yml
+      tags: ansible

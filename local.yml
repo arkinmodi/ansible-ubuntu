@@ -35,57 +35,69 @@
     - name: APT
       ansible.builtin.import_tasks: tasks/apt.yml
       tags: apt
+
     - name: Git
       ansible.builtin.import_tasks: tasks/git.yml
       tags: git
+
     - name: Snap
       ansible.builtin.import_tasks: tasks/snap.yml
       tags: snap
+
     - name: Dotfiles
       ansible.builtin.import_tasks: tasks/dotfiles.yml
       tags: dotfiles
+
     - name: ZSH
       ansible.builtin.import_tasks: tasks/zsh.yml
       tags:
         - dotfiles
         - zsh
+
     - name: Fonts
       ansible.builtin.import_tasks: tasks/fonts.yml
       tags:
         - dotfiles
         - fonts
-    - name: Python
-      ansible.builtin.import_tasks: tasks/python.yml
-      tags: python
+
     - name: Nodejs
       ansible.builtin.import_tasks: tasks/node.yml
       tags:
         - node
         - npm
+
     - name: Go
       ansible.builtin.import_tasks: tasks/go.yml
       tags: go
+
     - name: Rust
       ansible.builtin.import_tasks: tasks/rust.yml
       tags: rust
+
     - name: Java
       ansible.builtin.import_tasks: tasks/java.yml
       tags: java
+
     - name: Neovim
       ansible.builtin.import_tasks: tasks/neovim.yml
       tags: neovim
+
     - name: GNOME Desktop Environment
       ansible.builtin.import_tasks: tasks/gnome.yml
       tags: gnome
+
     - name: Home Directory
       ansible.builtin.import_tasks: tasks/home.yml
       tags: home
+
     - name: Visual Studio Code
       ansible.builtin.import_tasks: tasks/vscode.yml
       tags: vscode
+
     - name: Firefox
       ansible.builtin.import_tasks: tasks/firefox.yml
       tags: firefox
-    - name: Ansible
-      ansible.builtin.import_tasks: tasks/ansible.yml
-      tags: ansible
+
+    - name: Python
+      ansible.builtin.import_tasks: tasks/python/main.yml
+      tags: python
