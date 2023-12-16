@@ -17,14 +17,14 @@
       vars:
         # https://aws.amazon.com/corretto
         # https://github.com/corretto/corretto-17/releases
-        jdk_major_version: "17"
-        jdk_version: "{{ jdk_major_version }}.0.8.8.1"
+        jdk_major_version: "21"
+        jdk_version: "{{ jdk_major_version }}.0.1.12.1"
 
         jdk_x86_archive_name: "amazon-corretto-{{ jdk_version }}-linux-x64"
-        jdk_x86_sha256: dd0e9596a6661c85656bbb6c2c726b768ce50af7cd37209d56b681d0838c3393  # yamllint disable-line rule:line-length
+        jdk_x86_sha256: 3e718a86cfa6c1173c469f5e9d6b07fa37381a28ebb1f80593250cc380baf22f  # yamllint disable-line rule:line-length
 
         jdk_arm_archive_name: "amazon-corretto-{{ jdk_version }}-linux-aarch64"
-        jdk_arm_sha256: 27181aa282fa1ebf828a5ea284a88cd5d23206022233d40168d872681b4575d3  # yamllint disable-line rule:line-length
+        jdk_arm_sha256: aa43295803595f78d73e9c7c02866301c9729377277144e2829f54a58e5f6d21  # yamllint disable-line rule:line-length
 
         jdk_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(jdk_x86_archive_name, jdk_arm_archive_name) }}"  # yamllint disable-line rule:line-length
         jdk_sha256: "{{ (ansible_machine == 'x86_64') | ternary(jdk_x86_sha256, jdk_arm_sha256) }}"  # yamllint disable-line rule:line-length
@@ -76,9 +76,9 @@
     - name: Ensure Eclipse JDT Language Server & Purge Old Versions
       vars:
         # https://download.eclipse.org/jdtls/milestones
-        jdtls_version: 1.28.0
-        jdtls_archive_name: "jdt-language-server-{{ jdtls_version }}-202309281329"  # yamllint disable-line rule:line-length
-        jdtls_sha256: b15c6badd1f437b533d857720d7593c1cbb6ee9afb4dfb0579b7318e3dbb2e19  # yamllint disable-line rule:line-length
+        jdtls_version: 1.30.0
+        jdtls_archive_name: "jdt-language-server-{{ jdtls_version }}-202311301503"  # yamllint disable-line rule:line-length
+        jdtls_sha256: 579809f27df5f4e53566217f7273fa25cd45a22d3870c0aafd4f84cdd4c97acd  # yamllint disable-line rule:line-length
         jdtls_opt_dir: "{{ java_opt_dir }}/{{ jdtls_archive_name }}"
       block:
         - name: Download Eclipse JDT Language Server tar
