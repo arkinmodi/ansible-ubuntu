@@ -138,3 +138,43 @@
         checksum: "sha256:{{ lombok_sha256 }}"
         dest: "{{ java_opt_dir }}/lombok.jar"
         mode: "755"
+
+    - name: Setup java-debug
+      block:
+        - name: Clone java-debug
+          ansible.builtin.git:
+            accept_newhostkey: true
+            depth: 1
+            dest: "{{ java_opt_dir }}/java-debug"
+            force: true
+            repo: git@github.com:microsoft/java-debug
+            version: main
+          register: clone
+
+        - name: Build java-debug
+          when: clone.before != clone.after
+          ansible.builtin.command:
+            cmd: ./mvnw clean install -Dmaven.test.skip=true
+            chdir: "{{ java_opt_dir }}/java-debug"
+          changed_when: true
+
+    - name: Setup vscode-java-test
+      block:
+        - name: Clone java-debug
+          ansible.builtin.git:
+            accept_newhostkey: true
+            depth: 1
+            dest: "{{ java_opt_dir }}/vscode-java-test"
+            force: true
+            repo: git@github.com:microsoft/vscode-java-test
+            version: main
+          register: clone
+
+        - name: Build vscode-java-test
+          when: clone.before != clone.after
+          ansible.builtin.command:
+            cmd: |
+              npm install
+              npm run build-plugin
+            chdir: "{{ java_opt_dir }}/vscode-java-test"
+          changed_when: true
