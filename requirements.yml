@@ -1,0 +1,7 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/requirements.json
+# yamllint enable rule:line-length
+---
+collections:
+  - name: community.general
+    type: galaxy

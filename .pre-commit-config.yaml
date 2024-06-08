@@ -1,0 +1,40 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://json.schemastore.org/pre-commit-config.json
+# yamllint enable rule:line-length
+---
+ci:
+  autoupdate_schedule: quarterly
+  skip:
+    - ansible-lint
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+        exclude: json
+      - id: trailing-whitespace
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--strict]
+
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.2.0
+    hooks:
+      - id: ansible-lint
+        always_run: false
+        additional_dependencies:
+          - ansible
+        types_or:
+          - yaml
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or:
+          - markdown

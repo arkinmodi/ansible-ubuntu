@@ -17,7 +17,7 @@
         argv:
           - "{{ ansible_python.executable }}"
           - "{{ virtualenv_pyz }}"
-          - "-p={{ python_exe }}"
+          - -p={{ python_exe }}
           - "{{ target_venv }}"
         creates: "{{ target_venv }}/bin/python"
 

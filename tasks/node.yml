@@ -7,10 +7,10 @@
   vars:
     node_version: v20.9.0
 
-    node_x86_archive_name: "node-{{ node_version }}-linux-x64"
+    node_x86_archive_name: node-{{ node_version }}-linux-x64
     node_x86_sha256: f0919f092fbf74544438907fa083c21e76b2d7a4bc287f0607ada1553ef16f60  # yamllint disable-line rule:line-length
 
-    node_arm_archive_name: "node-{{ node_version }}-linux-arm64"
+    node_arm_archive_name: node-{{ node_version }}-linux-arm64
     node_arm_sha256: d2a7dbeeb274bfd16b579d2cafb92f673010df36c83a5b55de3916aad6806a6a  # yamllint disable-line rule:line-length
 
     node_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(node_x86_archive_name, node_arm_archive_name) }}"  # yamllint disable-line rule:line-length
@@ -28,8 +28,8 @@
   block:
     - name: Download Nodejs tar
       ansible.builtin.get_url:
-        url: "https://nodejs.org/dist/{{ node_version }}/{{ node_archive_name }}.tar.gz"  # yamllint disable-line rule:line-length
-        checksum: "sha256:{{ node_sha256 }}"
+        url: https://nodejs.org/dist/{{ node_version }}/{{ node_archive_name }}.tar.gz  # yamllint disable-line rule:line-length
+        checksum: sha256:{{ node_sha256 }}
         dest: "{{ tempdir.path }}/{{ node_archive_name }}.tar.gz"
         mode: "755"
 
@@ -61,7 +61,7 @@
     - name: Find Old Nodejs
       ansible.builtin.find:
         paths: "{{ common_opt }}"
-        pattern: "node-v*"
+        pattern: node-v*
         file_type: directory
       register: old_node
 

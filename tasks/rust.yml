@@ -6,7 +6,7 @@
   when: ansible_machine == 'x86_64' or ansible_machine == 'arm64'
   vars:
     rust_version: 1.73.0
-    rust_archive_name: "rust-{{ rust_version }}"
+    rust_archive_name: rust-{{ rust_version }}
     rust_opt_dir: "{{ common_opt }}/{{ rust_archive_name }}"
 
     # https://rust-lang.github.io/rustup/installation/other.html
@@ -40,8 +40,8 @@
   block:
     - name: Download rustup-init
       ansible.builtin.get_url:
-        url: "https://static.rust-lang.org/rustup/archive/{{ rustup_version }}/{{ rustup_arch }}/rustup-init"  # yamllint disable-line rule:line-length
-        checksum: "sha256:{{ rustup_sha256 }}"
+        url: https://static.rust-lang.org/rustup/archive/{{ rustup_version }}/{{ rustup_arch }}/rustup-init  # yamllint disable-line rule:line-length
+        checksum: sha256:{{ rustup_sha256 }}
         dest: "{{ tempdir.path }}/rustup-init"
         mode: "755"
 
@@ -55,8 +55,8 @@
       ansible.builtin.command:
         argv:
           - "{{ tempdir.path }}/rustup-init"
-          - "--default-host={{ rustup_arch }}"
-          - "--default-toolchain={{ rust_version }}"
+          - --default-host={{ rustup_arch }}
+          - --default-toolchain={{ rust_version }}
           - --no-modify-path
           - --profile=default
           - -y
@@ -97,7 +97,7 @@
     - name: Find Old Rust
       ansible.builtin.find:
         paths: "{{ common_opt }}"
-        pattern: "rust-*"
+        pattern: rust-*
         file_type: directory
       register: old_rust
 

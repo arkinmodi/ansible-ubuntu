@@ -11,6 +11,6 @@
 
 - name: Set zsh to the default shell
   become: true
-  ansible.builtin.command: "usermod --shell /bin/zsh {{ ansible_user_id }}"
+  ansible.builtin.command: usermod --shell /bin/zsh {{ ansible_user_id }}
   register: result
   changed_when: "result.stdout != 'usermod: no changes'"

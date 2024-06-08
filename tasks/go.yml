@@ -7,10 +7,10 @@
   vars:
     go_version: 1.21.0
 
-    go_x86_archive_name: "go{{ go_version }}.linux-amd64"
+    go_x86_archive_name: go{{ go_version }}.linux-amd64
     go_x86_sha256: d0398903a16ba2232b389fb31032ddf57cac34efda306a0eebac34f0965a0742  # yamllint disable-line rule:line-length
 
-    go_arm_archive_name: "go{{ go_version }}.linux-arm64"
+    go_arm_archive_name: go{{ go_version }}.linux-arm64
     go_arm_sha256: f3d4548edf9b22f26bbd49720350bbfe59d75b7090a1a2bff1afad8214febaf3  # yamllint disable-line rule:line-length
 
     go_archive_name: "{{ (ansible_machine == 'x86_64') | ternary(go_x86_archive_name, go_arm_archive_name) }}"  # yamllint disable-line rule:line-length
@@ -28,8 +28,8 @@
     - name: Download Go tar
       ansible.builtin.get_url:
         # https://go.dev/dl/
-        url: "https://go.dev/dl/{{ go_archive_name }}.tar.gz"
-        checksum: "sha256:{{ go_sha256 }}"
+        url: https://go.dev/dl/{{ go_archive_name }}.tar.gz
+        checksum: sha256:{{ go_sha256 }}
         dest: "{{ tempdir.path }}/{{ go_archive_name }}.tar.gz"
         mode: "755"
 
@@ -56,8 +56,7 @@
         - "{{ go_opt_dir }}/{{ go_archive_name }}/go/bin/*"
 
     - name: Install Go Packages
-      ansible.builtin.command:
-        cmd: "go install {{ item.package_name }}@latest"
+      ansible.builtin.command: go install {{ item.package_name }}@latest
       register: result
       changed_when: result.stderr != ""
       loop: "{{ go_packages }}"
@@ -72,7 +71,7 @@
     - name: Find Old Go
       ansible.builtin.find:
         paths: "{{ common_opt }}"
-        pattern: "go-*"
+        pattern: go-*
         file_type: directory
       register: old_gos
 
