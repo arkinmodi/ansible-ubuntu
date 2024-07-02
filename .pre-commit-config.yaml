@@ -9,7 +9,7 @@ ci:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
@@ -23,7 +23,7 @@ repos:
         args: [--strict]
 
   - repo: https://github.com/ansible/ansible-lint
-    rev: v24.2.0
+    rev: v24.6.1
     hooks:
       - id: ansible-lint
         always_run: false
